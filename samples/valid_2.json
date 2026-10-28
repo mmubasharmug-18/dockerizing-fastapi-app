@@ -1,0 +1,6 @@
+{
+  "patient_id": "P-1001",
+  "age": 45,
+  "blood_pressure": { "systolic": 135, "diastolic": 88 },
+  "glucose_level": 110
+}
