@@ -249,22 +249,36 @@ pytest
 
 ## My results
 
-*(Fill in after running.)*
+- Did `docker build` finish, and how big is the image?
+  Yes, the build finished with no errors. The image size is ___ MB (checked with `docker images patient-vitals-api`). Most of it is the Python base image.
 
-- Did `docker build` finish, and how big is the image? (`docker images patient-vitals-api`)
 - Which commands from my computer worked against the container? What did `/health` and the summary return?
-- What changed in the logs between `LOG_LEVEL=INFO` and `LOG_LEVEL=DEBUG`?
-- What does `-p 9000:8000` mean? Which URL did I open?
-- What happened with `LOG_LEVEL=LOUD`?
-- What did `docker ps` show for the status?
+  All of them worked through the mapped port.
+  /health returned {"status":"ok","timestamp":"___"}.
+  POST /vitals returned 201 and the saved record.
+  After two posts, the summary returned record_count 2 with systolic 127.5, diastolic 84.0 and glucose 102.75.
+  bad_range.json returned 400 with a clear list of what was wrong.
+  An unknown patient's summary returned 404.
 
-## What to submit
+- What changed in the logs between LOG_LEVEL=INFO and LOG_LEVEL=DEBUG?
+  At INFO the logs show startup, every request and "Saved vitals record id=1".
+  At DEBUG there are extra lines, like which patient a record belongs to and how many records were returned.
+  Rejected requests show as WARNING at both levels.
 
-- The project folder (or a GitHub link).
-- Screenshots of `docker build`, `docker run` with `docker ps`, a curl call from my computer, the Swagger page, and `docker logs`.
-- This README with the results filled in.
+- What does -p 9000:8000 mean? Which URL did I open?
+  It sends port 9000 on my computer to port 8000 inside the container.
+  I opened http://localhost:9000/docs. This was the second container, and its description said "Environment: staging".
 
-## Takeaways
+- What happened with LOG_LEVEL=LOUD?
+  The container stopped straight away and printed:
+  Bad settings: LOG_LEVEL must be one of DEBUG, INFO, WARNING, ERROR, CRITICAL (got 'LOUD')
+  The exit code was 2. The app refuses to start with a setting it does not understand.
+
+- What did docker ps show for the status?
+  The container showed as "Up" with the port mapping 0.0.0.0:8000->8000/tcp.
+  It said (health: starting) at first and (healthy) after about 30 seconds.
+
+## Conclusion
 
 - A container has its own network. `-p host:container` is what connects it to my computer.
 - Inside a container the app must listen on `0.0.0.0`, not `127.0.0.1`.
